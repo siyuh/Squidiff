@@ -1,0 +1,8 @@
+[console_scripts]
+spam-cli = spam:main_cli
+
+[gui_scripts]
+spam-gui = spam:main_gui
+
+[spam.magical]
+tomatoes = spam:main_tomatoes
