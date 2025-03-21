@@ -39,9 +39,11 @@ test_adata_scrna = sc.read_h5ad('datasets/sc_simu_test.h5ad')
 z_sem_scrna = sampler.model.encoder(torch.tensor(test_adata_scrna.X).to('cuda'))
 
 scrnas_pred = sampler.pred(z_sem_scrna, gene_size = test_adata_scrna.shape[1])
-
-
 ```
+
+### Tutorial
+We will release a tutorial notebook soon. 
+
 ### How to cite Squidiff
 
 bioRxiv: https://doi.org/10.1101/2024.11.16.623974
