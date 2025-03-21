@@ -148,9 +148,9 @@ class MLPModel(nn.Module):
             if 'z_mod' in model_kwargs.keys():
                 z_sem = model_kwargs['z_mod']
             elif self.num_classes is None:
-                z_sem = self.encoder(model_kwargs['x_start'],label = None,drug_dose = model_kwargs['drug_dose'])
+                z_sem = self.encoder(model_kwargs['x_start'],label = None,drug_dose = model_kwargs['drug_dose'],control_feature = model_kwargs['control_feature'])
             else: 
-                z_sem = self.encoder(model_kwargs['x_start'],label = model_kwargs['group'],drug_dose = model_kwargs['drug_dose'])
+                z_sem = self.encoder(model_kwargs['x_start'],label = model_kwargs['group'],drug_dose = model_kwargs['drug_dose'],control_feature = model_kwargs['control_feature'])
 
             h = self.input_layer(x)
             
@@ -191,14 +191,14 @@ class EncoderMLPModel(nn.Module):
        
         self.label_embed = nn.Linear(1, hidden_sizes)
     
-    def forward(self, x_start, label=None, drug_dose=None):
+    def forward(self, x_start, label=None, drug_dose=None, control_feature = None):
         
         if label is not None:
             label_emb = self.label_embed(label)
             x_start = th.concat([x_start,label_emb],axis=1)
         
         if drug_dose is not None:
-            x_start = th.concat([x_start,drug_dose],axis=1)
+            x_start = th.concat([control_feature,drug_dose],axis=1)
             
         h = x_start.type(self.dtype)
         h = F.relu(self.bn1(self.fc1(h)))

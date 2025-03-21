@@ -1,4 +1,4 @@
-ddim_reverse_sample"""
+"""
 This code is adapted from openai's guided-diffusion models and Konpat's diffae model:
 https://github.com/openai/guided-diffusion
 https://github.com/phizaz/diffae

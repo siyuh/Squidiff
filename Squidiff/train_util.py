@@ -228,11 +228,13 @@ class TrainLoop:
                 micro_cond = {
                     'group': batch['group'][i : i + self.microbatch],
                     'drug_dose': batch['drug_dose'][i : i + self.microbatch].to(dist_util.dev()),
+                    'control_feature':batch['control_feature'].to(dist_util.dev()),
                 }
             else:
                 micro_cond = {
                     'group': batch['group'][i : i + self.microbatch],
-                    'drug_dose':None
+                    'drug_dose':None,
+                    'control_feature':None
                 }
             
             last_batch = (i + self.microbatch) >= batch['feature'].shape[0]

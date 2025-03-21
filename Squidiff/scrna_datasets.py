@@ -36,7 +36,7 @@ def Drug_dose_encoder(drug_SMILES_list: list, dose_list: list, num_Bits=1024, co
     return fcfp4_array 
 
 class AnnDataDataset(Dataset):
-    def __init__(self, adata,use_drug_structure,comb_num):
+    def __init__(self, adata, control_adata=None,use_drug_structure=False,comb_num=1):
         self.use_drug_structure = use_drug_structure
         if type(adata.X)==np.ndarray:
             self.features = torch.tensor(adata.X, dtype=torch.float32)
@@ -44,12 +44,19 @@ class AnnDataDataset(Dataset):
             self.features = torch.tensor(adata.X.toarray(), dtype=torch.float32)
         
         if self.use_drug_structure:
+            if type(control_adata.X)==np.ndarray:
+                self.control_features = torch.tensor(control_adata.X, dtype=torch.float32)
+            else:
+                self.control_features = torch.tensor(control_adata.X.toarray(), dtype=torch.float32)
+                
             self.drug_type_list = adata.obs['SMILES'].to_list()
             self.dose_list = adata.obs['dose'].to_list()
             #self.encoded_obs_tensor = torch.tensor(adata.obs['Group'].copy().values, dtype=torch.float32)
             self.encoded_obs_tensor = adata.obs['Group'].copy().values
             self.encode_drug_doses = Drug_dose_encoder(self.drug_type_list, self.dose_list, comb_num=comb_num)
             self.encode_drug_doses = torch.tensor(self.encode_drug_doses, dtype=torch.float32)
+        else:
+            self.encoded_obs_tensor = adata.obs['Group'].copy().values
         
     def __len__(self):
         return len(self.features)
@@ -57,22 +64,28 @@ class AnnDataDataset(Dataset):
     def __getitem__(self, idx):
        
         if self.use_drug_structure:
-            return {'feature':self.features[idx], 'drug_dose':self.encode_drug_doses[idx], 'group': self.encoded_obs_tensor[idx]}
+            return {'feature':self.features[idx], 'drug_dose':self.encode_drug_doses[idx], 'group': self.encoded_obs_tensor[idx],'control_feature':self.control_features[idx]}
         else:
-            return {'feature':self.features[idx], 'drug_dose':None, 'group': self.encoded_obs_tensor[idx]}
+            return {'feature':self.features[idx], 'group': self.encoded_obs_tensor[idx]}
             
     
 
-def prepared_data(data_dir=None,batch_size=64,use_drug_structure=False,comb_num=1):
+def prepared_data(data_dir=None,control_data_dir=None, batch_size=64,use_drug_structure=False,comb_num=1):
      
+    
     train_adata = sc.read_h5ad(data_dir)
+    if use_drug_structure:
+        control_adata = sc.read_h5ad(control_data_dir)
+    else:
+        control_adata = None
     
-    _data_dataset = AnnDataDataset(train_adata,use_drug_structure,comb_num)
-    
-    
+    _data_dataset = AnnDataDataset(train_adata,control_adata,use_drug_structure,comb_num)
+
+
     dataloader = DataLoader(
                 _data_dataset, 
                 batch_size=batch_size,
                 shuffle=True, 
                 )
+        
     return dataloader
