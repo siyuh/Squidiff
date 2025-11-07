@@ -41,13 +41,18 @@ z_sem_scrna = sampler.model.encoder(torch.tensor(test_adata_scrna.X).to('cuda'))
 scrnas_pred = sampler.pred(z_sem_scrna, gene_size = test_adata_scrna.shape[1])
 ```
 
-### Tutorial
-We will release a tutorial notebook soon. 
+### Demo
+Please forward to https://github.com/siyuh/Squidiff_reproducibility for data preparation, model usage, and downstream analysis.
 
 ### How to cite Squidiff
 
-bioRxiv: https://doi.org/10.1101/2024.11.16.623974
-
+Please cite:
+```
+He, S., Zhu, Y., Tavakol, D.N. et al. Squidiff: predicting cellular development and responses to perturbations using a diffusion model. Nat Methods (2025). https://doi.org/10.1038/s41592-025-02877-y
+```
+```
+Predicting cellular responses with conditional diffusion models. Nat Methods (2025). https://doi.org/10.1038/s41592-025-02878-x
+```
 ## Contact
 In case you have questions, please contact:
 - Siyu He - siyuhe@stanford.edu
